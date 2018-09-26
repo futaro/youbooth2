@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+</head>
+<body>
+<iframe src="http://embed.nicovideo.jp/watch/sm33111915?jsapi=1" id="nicovideoPlayer-1" frameborder="0" allowfullscreen></iframe>
+<script>
+  $(function() {
+    let player1 = document.getElementById('nicovideoPlayer-1');
+    $(player1).on('load', () => {
+      player1.contentWindow.postMessage({
+        sourceConnectorType: 1,
+        eventName: 'play'
+      }, 'http://embed.nicovideo.jp/');
+    })
+    window.addEventListener('message', (e) => {
+      //if (e.origin === 'http://embed.nicovideo.jp') {
+      //    console.log(e.data.eventName);
+      //}
+    });
+  });
+</script>
+</body>
+</html>
