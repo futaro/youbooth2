@@ -6,20 +6,14 @@ Track.sync()
 
 let nowPlayingID = null
 
-async function play(id = false) {
+async function play() {
 
-  let track
-
-  if (id) {
-    track = await Track.findById(id)
-  } else {
-    track = await Track.findOne({
-      where: {
-        isPlayed: 0
-      },
-      order: 'createdAt ASC'
-    })
-  }
+  const track = await Track.findOne({
+    where: {
+      isPlayed: 0
+    },
+    order: ['createdAt']
+  })
 
   if (track) {
 
@@ -33,7 +27,7 @@ async function play(id = false) {
     setTimeout(() => {
       nowPlayingID = null
       play()
-    }, track.duration * 1000)
+    }, track.duration * 1000 + 5000)
   }
 }
 
@@ -78,7 +72,7 @@ app.addHandler('add_track', async req => {
   await track.save()
 
   if (!nowPlayingID) {
-    play(track.id)
+    play()
   }
 
   return track

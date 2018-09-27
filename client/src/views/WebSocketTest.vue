@@ -20,7 +20,7 @@
     data() {
       return {
         ws           : null,
-        new_track_url: 'http://www.nicovideo.jp/watch/sm33111915',
+        new_track_url: 'http://www.nicovideo.jp/watch/sm33663298',
         niconico_src : null
       }
     },

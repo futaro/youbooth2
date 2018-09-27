@@ -12,10 +12,21 @@ class NicoNicoAPI {
           if (error) return reject(error)
           const res = result.nicovideo_thumb_response.thumb[0]
 
+          // fuck
+          const l = res.length[0].split(':')
+          let duration
+          if (l.length === 1) {
+            duration = parseInt(l[0])
+          } else if (l.length === 2) {
+            duration = (parseInt(l[0]) * 60) + parseInt(l[1])
+          } else if (l.length === 3) {
+            duration = (parseInt(l[0]) * 60 * 60) + (parseInt(l[1]) * 60) + parseInt(l[2])
+          }
+
           resolve({
             title      : res.title[0],
             description: res.description[0],
-            duration   : parseInt(res.length[0].split(':')[0]) * 60 + parseInt(res.length[0].split(':')[1]) // fuck
+            duration   : duration
           })
         })
       })
