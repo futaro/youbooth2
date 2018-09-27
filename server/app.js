@@ -3,19 +3,12 @@ const AppServer = require('./src/server')
   , NicoNicoAPI = require('./src/api/niconico')
   , slackBot    = require('./src/bot')
 
-Track.sync()
-
 let nowPlayingID = null,
     startTime    = 0
 
 async function play() {
 
-  const track = await Track.findOne({
-    where : {
-      isPlayed : 0
-    },
-    order : ['createdAt']
-  })
+  const track = await Track.getUnPlayedTrack()
 
   if (track) {
 
@@ -80,7 +73,8 @@ app.addHandler('add_track', async req => {
     return {error : 'not match'}
   }
 
-  let track         = new Track()
+  let track = new Track()
+  
   track.type        = type
   track.uid         = uid
   track.title       = title
