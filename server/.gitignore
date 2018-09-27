@@ -1,1 +1,4 @@
 node_modules
+.secrets.json
+.json_file_store
+!.gitkeep

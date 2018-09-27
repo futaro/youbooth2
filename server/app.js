@@ -1,6 +1,7 @@
 const AppServer = require('./src/server')
   , {Track}     = require('./src/models')
   , NicoNicoAPI = require('./src/api/niconico')
+  , slackBot    = require('./src/bot')
 
 Track.sync()
 
@@ -23,9 +24,9 @@ async function play() {
 
     app.broadcast(JSON.stringify({
       action : 'play',
-      data : {
+      data   : {
         track : track,
-        from : 0
+        from  : 0
       }
     }))
 
@@ -49,9 +50,9 @@ app.addHandler('hello', async req => {
     if (track) {
       return {
         action : 'play',
-        data : {
+        data   : {
           track : track,
-          from : parseInt(((new Date()).getTime() - startTime) / 1000)
+          from  : parseInt(((new Date()).getTime() - startTime) / 1000)
         }
       }
     }
@@ -93,7 +94,15 @@ app.addHandler('add_track', async req => {
     play()
   }
 
-  return {message:'success'}
+  return {message : 'success'}
 })
 
 app.listen()
+
+
+slackBot.on('slash_command', (bot, message) => {
+
+  console.log(message)
+
+  // bot.replyPublic(message, `⏰ 「${message.text}」やるぞー！`);
+});
