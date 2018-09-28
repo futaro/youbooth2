@@ -27,7 +27,7 @@ class Nico {
     return this._valid
   }
 
-  static getInfo(uid) {
+  static async getInfo(uid) {
     return new Promise((resolve, reject) => {
       const url = `https://ext.nicovideo.jp/api/getthumbinfo/${uid}`
       wget({url: url, dest: '/dev/null'}, function (error, response, body) {
