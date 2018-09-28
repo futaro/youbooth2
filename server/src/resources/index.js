@@ -11,7 +11,8 @@ class Resource {
     let resource
     const matched = this.resources.some(async rsc => {
 
-      let r = await new rsc(url)
+      let r = new rsc(url)
+      await r.match()
       if (r.isValid()) {
         resource = r
         return true

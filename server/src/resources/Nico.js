@@ -3,10 +3,13 @@ const wget      = require('node-wget')
 
 class Nico {
 
-  async constructor(url) {
+  constructor(url) {
     this._valid = false
+    this._url = url
+  }
 
-    if (/https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/.test(url)) {
+  async match() {
+    if (/https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/.test(this._url)) {
       this.type     = 'niconico'
       this.uid      = RegExp.$1
       const info    = await Nico.getInfo(uid)
