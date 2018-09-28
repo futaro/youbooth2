@@ -1,20 +1,16 @@
-const botkit  = require('botkit')
-const secrets = require('../.secrets.json')
-const env     = {
-  port                 : 3000,
-  json_file_store_path : '../.json_file_store/'
-}
+const botkit = require('botkit')
+const configs = require('../../config.server')
 
 const controller = botkit.slackbot({
-  debug           : false,
-  json_file_store : env.json_file_store_path
+  debug          : false,
+  json_file_store: configs.bot.json_file_store_path
 }).configureSlackApp({
-  clientId     : secrets.clientId,
-  clientSecret : secrets.clientSecret,
-  scopes       : ['commands']
+  clientId    : configs.slack.clientId,
+  clientSecret: configs.slack.clientSecret,
+  scopes      : ['commands']
 })
 
-controller.setupWebserver(env.port, (err, webserver) => {
+controller.setupWebserver(configs.bot.port, (err, webserver) => {
   controller
     .createOauthEndpoints(controller.webserver, (err, req, res) => {
       if (err) {
@@ -25,6 +21,5 @@ controller.setupWebserver(env.port, (err, webserver) => {
     })
     .createWebhookEndpoints(controller.webserver)
 })
-
 
 module.exports = controller

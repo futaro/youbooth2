@@ -6,7 +6,7 @@
 <script>
 
   import NicoPlayer from '../components/NicoPlayer'
-  import configs from '../../config'
+  import configs from '../../../config.client'
 
   export default {
 

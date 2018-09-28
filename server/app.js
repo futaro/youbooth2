@@ -33,7 +33,6 @@ async function play() {
   }
 }
 
-
 const app = new AppServer()
 
 app.addHandler('hello', async req => {
@@ -52,9 +51,7 @@ app.addHandler('hello', async req => {
   }
 })
 
-
 app.listen()
-
 
 slackBot.on('slash_command', async (bot, message) => {
 
@@ -93,6 +90,4 @@ slackBot.on('slash_command', async (bot, message) => {
   }
 
   bot.replyPrivate(message, 'Add `' + title + '`')
-
-  // bot.replyPublic(message, `⏰ 「${message.text}」やるぞー！`);
 });

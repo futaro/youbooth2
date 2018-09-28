@@ -1,9 +1,10 @@
 const WebSocketServer = require('websocket').server
   , http              = require('http')
   , logger            = require('./logger')
-  , configs           = require('../config')
+  , configs           = require('../../config.server')
 
 class Server {
+
   constructor() {
 
     this.handlers = {}
@@ -21,7 +22,7 @@ class Server {
   }
 
   onRequest(req) {
-    const isAllowOrigin = configs.allowOrigins.some(o => o === req.origin)
+    const isAllowOrigin = configs.ws.allowOrigins.some(o => o === req.origin)
     if (isAllowOrigin !== true) {
       req.reject()
       logger.debug(`Connection from origin ${req.origin} rejected.`)
@@ -56,7 +57,7 @@ class Server {
   }
 
   onClose(reasonCode, description) {
-    logger.debug(` Peer ${this._connection.remoteAddress} disconnected.`)
+    logger.debug(`Peer ${this._connection.remoteAddress} disconnected.`)
   }
 
   addHandler(action, callback) {
@@ -68,8 +69,8 @@ class Server {
   }
 
   listen() {
-    this._server.listen(configs.port, () => {
-      logger.debug(`logger.debug Server is listening on port ${configs.port}`)
+    this._server.listen(configs.ws.port, () => {
+      logger.debug(`logger.debug Server is listening on port ${configs.ws.port}`)
     })
   }
 }

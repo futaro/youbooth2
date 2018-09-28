@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize').Sequelize
-  , {db}        = require('../../config')
+  , {db}        = require('../../../config.server')
 
 const connection = new Sequelize(
   db.name,
