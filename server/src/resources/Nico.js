@@ -15,7 +15,7 @@ class Nico {
     if (regExp.test(this._url)) {
       this.type     = 'niconico'
       this.uid      = RegExp.$1
-      const info    = await Nico.getInfo(uid)
+      const info    = await this.getInfo(this.uid)
       this.title    = info.title
       this.duration = info.duration
 
@@ -27,7 +27,7 @@ class Nico {
     return this._valid
   }
 
-  static async getInfo(uid) {
+  getInfo(uid) {
     return new Promise((resolve, reject) => {
       const url = `https://ext.nicovideo.jp/api/getthumbinfo/${uid}`
       wget({url: url, dest: '/dev/null'}, function (error, response, body) {

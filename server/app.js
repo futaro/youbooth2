@@ -59,7 +59,7 @@ slackBot.on('slash_command', async (bot, message) => {
 
   const url = message.text
 
-  const resource = Resource.factory(url)
+  const resource = await Resource.factory(url)
   console.log(resource)
 
 
