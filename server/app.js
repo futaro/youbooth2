@@ -52,44 +52,6 @@ app.addHandler('hello', async req => {
   }
 })
 
-app.addHandler('add_track', async req => {
-  console.log(req.data)
-
-  const url = req.data.url
-
-  const matchNicoNico = /https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/
-
-  let type, uid, title, duration
-  if (matchNicoNico.test(url)) {
-    type       = 'niconico'
-    uid        = RegExp.$1
-    const info = await NicoNicoAPI.getInfo(uid)
-    console.log('info', info)
-    title    = info.title
-    duration = info.duration
-  }
-
-  if (!uid) {
-    return {error : 'not match'}
-  }
-
-  let track = new Track()
-
-  track.type        = type
-  track.uid         = uid
-  track.title       = title
-  track.duration    = duration
-  track.isPlayed    = 0
-  track.requestedBy = 'test'
-
-  await track.save()
-
-  if (!nowPlayingID) {
-    play()
-  }
-
-  return {message : 'success'}
-})
 
 app.listen()
 
