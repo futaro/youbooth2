@@ -1,7 +1,25 @@
 const wget      = require('node-wget')
   , parseString = require('xml2js').parseString
 
-class NicoNicoAPI {
+class Nico {
+
+  async constructor(url) {
+    this._valid = false
+
+    if (/https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/.test(url)) {
+      this.type     = 'niconico'
+      this.uid      = RegExp.$1
+      const info    = await Nico.getInfo(uid)
+      this.title    = info.title
+      this.duration = info.duration
+
+      this._valid = true
+    }
+  }
+
+  isValid() {
+    return this._valid
+  }
 
   static getInfo(uid) {
     return new Promise((resolve, reject) => {
@@ -12,7 +30,7 @@ class NicoNicoAPI {
           if (error) return reject(error)
           const res = result.nicovideo_thumb_response.thumb[0]
 
-          // fuck
+          // fuck!!!!!!!!!
           const l = res.length[0].split(':')
           let duration
           if (l.length === 1) {
@@ -34,4 +52,4 @@ class NicoNicoAPI {
   }
 }
 
-module.exports = NicoNicoAPI
+module.exports = Nico

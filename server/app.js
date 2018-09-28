@@ -1,7 +1,9 @@
 const AppServer = require('./src/server')
   , {Track}     = require('./src/models')
-  , NicoNicoAPI = require('./src/api/niconico')
+  , Resource    = require('./src/resources')
   , slackBot    = require('./src/bot')
+
+const interval = 5000
 
 let nowPlayingID = null,
     startTime    = 0
@@ -10,43 +12,43 @@ async function play() {
 
   const track = await Track.getUnPlayedTrack()
 
-  if (track) {
+  if (!track) return
 
-    nowPlayingID = track.id
-    startTime    = (new Date()).getTime()
+  nowPlayingID = track.id
+  startTime    = (new Date()).getTime()
 
-    app.broadcast(JSON.stringify({
-      action : 'play',
-      data   : {
-        track : track,
-        from  : 0
-      }
-    }))
+  app.broadcast(JSON.stringify({
+    action: 'play',
+    data  : {
+      track: track,
+      from : 0
+    }
+  }))
 
-    track.isPlayed = 1
-    await track.save()
+  track.isPlayed = 1
+  await track.save()
 
-    setTimeout(() => {
-      nowPlayingID = null
-      play()
-    }, track.duration * 1000 + 5000)
-  }
+  setTimeout(() => {
+    nowPlayingID = null
+    play()
+  }, track.duration * 1000 + interval)
 }
 
 const app = new AppServer()
 
 app.addHandler('hello', async req => {
 
-  if (nowPlayingID) {
-    const track = await Track.findById(nowPlayingID)
-    if (track) {
-      return {
-        action : 'play',
-        data   : {
-          track : track,
-          from  : parseInt(((new Date()).getTime() - startTime) / 1000)
-        }
-      }
+  if (!nowPlayingID) return
+
+  const track = await Track.findById(nowPlayingID)
+
+  if (!track) return
+
+  return {
+    action: 'play',
+    data  : {
+      track: track,
+      from : parseInt(((new Date()).getTime() - startTime) / 1000)
     }
   }
 })
@@ -57,37 +59,27 @@ slackBot.on('slash_command', async (bot, message) => {
 
   const url = message.text
 
-  const matchNicoNico = /https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/
+  const resource = Resource.factory(url)
 
-  let type, uid, title, duration
-  if (matchNicoNico.test(url)) {
-    type       = 'niconico'
-    uid        = RegExp.$1
-    const info = await NicoNicoAPI.getInfo(uid)
-    console.log('info', info)
-    title    = info.title
-    duration = info.duration
-  }
 
-  if (!uid) {
+  if (!resource) {
     bot.replyPrivate(message, '?')
     return
   }
 
   let track = new Track()
 
-  track.type        = type
-  track.uid         = uid
-  track.title       = title
-  track.duration    = duration
+  track.channel     = ''
+  track.type        = resource.type
+  track.uid         = resource.uid
+  track.title       = resource.title
+  track.duration    = resource.duration
   track.isPlayed    = 0
   track.requestedBy = 'test'
 
   await track.save()
 
-  if (!nowPlayingID) {
-    play()
-  }
+  if (!nowPlayingID) play()
 
-  bot.replyPrivate(message, 'Add `' + title + '`')
-});
+  bot.replyPrivate(message, 'Add `' + resource.title + '`')
+})
