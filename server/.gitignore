@@ -1,4 +1,5 @@
 node_modules
 .secrets.json
-.json_file_store
+config.js
+.json_file_store/*
 !.gitkeep
