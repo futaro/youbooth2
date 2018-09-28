@@ -6,6 +6,7 @@
 <script>
 
   import NicoPlayer from '../components/NicoPlayer'
+  import configs from '../../config'
 
   export default {
 
@@ -28,7 +29,7 @@
     methods: {
 
       connect() {
-        this.ws = new WebSocket('ws://localhost:7000/', ['echo-protocol', 'soap', 'xmpp'])
+        this.ws = new WebSocket(configs.ws, ['echo-protocol', 'soap', 'xmpp'])
 
         this.ws.onopen = _ => {
           this.ws.send(JSON.stringify({action: 'hello'}))
