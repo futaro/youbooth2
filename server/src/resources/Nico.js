@@ -5,11 +5,14 @@ class Nico {
 
   constructor(url) {
     this._valid = false
-    this._url = url
+    this._url   = url
   }
 
   async match() {
-    if (/https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/.test(this._url)) {
+
+    const regExp = /https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/
+
+    if (regExp.test(this._url)) {
       this.type     = 'niconico'
       this.uid      = RegExp.$1
       const info    = await Nico.getInfo(uid)
