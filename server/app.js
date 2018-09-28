@@ -69,13 +69,13 @@ slackBot.on('slash_command', async (bot, message) => {
 
   let track = new Track()
 
-  track.channel     = ''
+  track.channel     = message.channel_name
   track.type        = resource.type
   track.uid         = resource.uid
   track.title       = resource.title
   track.duration    = resource.duration
   track.isPlayed    = 0
-  track.requestedBy = 'test'
+  track.requestedBy = message.user_name
 
   await track.save()
 

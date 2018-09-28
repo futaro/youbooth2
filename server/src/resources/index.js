@@ -6,22 +6,20 @@ class Resource {
     return [Nico]
   }
 
-  static factory(url) {
+  static async factory(url) {
 
-    let resource
-    const matched = this.resources.some(async rsc => {
+    let resource = null
+
+    for (let i = 0; i < this.resources.length; i++) {
+
+      let rsc = this.resources[i]
 
       let r = new rsc(url)
       await r.match()
-      if (r.isValid()) {
-        resource = r
-        return true
-      }
+      if (r.isValid()) resource = r
+    }
 
-      return false
-    })
-
-    return matched ? resource : null
+    return resource
   }
 }
 
