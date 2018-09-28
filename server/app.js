@@ -74,7 +74,7 @@ app.addHandler('add_track', async req => {
   }
 
   let track = new Track()
-  
+
   track.type        = type
   track.uid         = uid
   track.title       = title
@@ -94,9 +94,43 @@ app.addHandler('add_track', async req => {
 app.listen()
 
 
-slackBot.on('slash_command', (bot, message) => {
+slackBot.on('slash_command', async (bot, message) => {
 
-  console.log(message)
+  const url = message.text
+
+  const matchNicoNico = /https?:\/\/www\.nicovideo\.jp\/watch\/(sm[0-9]+)/
+
+  let type, uid, title, duration
+  if (matchNicoNico.test(url)) {
+    type       = 'niconico'
+    uid        = RegExp.$1
+    const info = await NicoNicoAPI.getInfo(uid)
+    console.log('info', info)
+    title    = info.title
+    duration = info.duration
+  }
+
+  if (!uid) {
+    bot.replyPrivate(message, '?')
+    return
+  }
+
+  let track = new Track()
+
+  track.type        = type
+  track.uid         = uid
+  track.title       = title
+  track.duration    = duration
+  track.isPlayed    = 0
+  track.requestedBy = 'test'
+
+  await track.save()
+
+  if (!nowPlayingID) {
+    play()
+  }
+
+  bot.replyPrivate(message, 'Add `' + title + '`')
 
   // bot.replyPublic(message, `⏰ 「${message.text}」やるぞー！`);
 });
