@@ -11,9 +11,12 @@ async function play(workspace, channel) {
   let track     = await Track.getUnPlayedTrack(workspace, channel)
     , is_random = false
 
+  console.log('track: ', track)
+
   if (!track) {
     track     = await Track.getRandomTrack(workspace, channel)
     is_random = true
+    console.log('random_track: ', track)
   }
 
   const store = Store.factory(workspace, channel)
@@ -21,6 +24,8 @@ async function play(workspace, channel) {
   store.nowPlayingID = track.id
   store.startTime    = (new Date()).getTime()
   store.isRandom     = is_random
+
+  console.log(store)
 
   server.broadcast(JSON.stringify({
     action: 'play',
@@ -79,8 +84,7 @@ server.addHandler('debug', async req => {
 
   const workspace = req.data.workspace || false,
         channel   = req.data.channel || false
-  console.log(workspace, channel)
-  const store = Store.factory(workspace, channel)
+  const store     = Store.factory(workspace, channel)
 
   const resource = await Resource.factory(req.data.url)
 

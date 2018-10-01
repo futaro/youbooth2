@@ -7,6 +7,7 @@ class Store {
     if (store) {
       return store
     } else {
+      console.log('new store')
       const s = new Store(workspace, channel)
       _instances.push(s)
       return s

@@ -65,7 +65,7 @@ class Server {
   }
 
   broadcast(message) {
-    console.log(this._wsServer.broadcast(message))
+    this._wsServer.broadcast(message)
   }
 
   listen() {
