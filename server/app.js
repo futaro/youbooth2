@@ -4,7 +4,7 @@ const AppServer = require('./src/server')
   , slackBot    = require('./src/bot')
   , Store       = require('./src/store')
 
-const interval = 5000
+const interval = 3000
 
 async function play(workspace, channel) {
 
@@ -14,10 +14,10 @@ async function play(workspace, channel) {
 
   if (!track) {
 
-    const random_rack = await Track.getRandomTrack(workspace, channel)
-    if (!random_rack) return
+    const random_track = await Track.getRandomTrack(workspace, channel)
+    if (!random_track) return
 
-    store.nowPlayingID = random_rack.id
+    store.nowPlayingID = random_track.id
     store.startTime    = (new Date()).getTime()
 
     server.broadcast(JSON.stringify({
@@ -25,11 +25,16 @@ async function play(workspace, channel) {
       data  : {
         workspace: workspace,
         channel  : channel,
-        track    : random_rack,
+        track    : random_track,
         from     : 0,
         is_random: true
       }
     }))
+
+    setTimeout(async () => {
+      store.nowPlayingID = null
+      await play(workspace, channel)
+    }, random_track.duration * 1000 + interval)
 
   } else {
 
@@ -49,12 +54,13 @@ async function play(workspace, channel) {
 
     track.isPlayed = 1
     await track.save()
+
+    setTimeout(async () => {
+      store.nowPlayingID = null
+      await play(workspace, channel)
+    }, track.duration * 1000 + interval)
   }
 
-  setTimeout(async () => {
-    store.nowPlayingID = null
-    await play(workspace, channel)
-  }, track.duration * 1000 + interval)
 }
 
 const server = new AppServer()
@@ -81,7 +87,8 @@ server.addHandler('hello', async req => {
       workspace: workspace,
       channel  : channel,
       track    : track,
-      from     : parseInt(((new Date()).getTime() - store.startTime) / 1000)
+      from     : parseInt(((new Date()).getTime() - store.startTime) / 1000),
+      is_random: false
     }
   }
 })
@@ -117,16 +124,16 @@ server.addHandler('debug', async req => {
 
   await track.save()
 
-  if (!store.nowPlayingID) play(workspace, channel)
+  if (!store.nowPlayingID) await play(workspace, channel)
 })
 
 server.listen()
 
 slackBot.on('slash_command', async (bot, message) => {
 
-  const url     = message.text
-    , workspace = message.team_domain
-    , channel   = message.channel_name
+  const url     = message['text']
+    , workspace = message['team_domain']
+    , channel   = message['channel_name']
 
   const store = Store.factory(workspace, channel)
 
@@ -146,13 +153,13 @@ slackBot.on('slash_command', async (bot, message) => {
   track.title       = resource.title
   track.duration    = resource.duration
   track.isPlayed    = 0
-  track.requestedBy = message.user_name
+  track.requestedBy = message['user_name']
   track.good        = 0
   track.bad         = 0
 
   await track.save()
 
-  if (!store.nowPlayingID) play(workspace, channel)
+  if (!store.nowPlayingID) await play(workspace, channel)
 
   bot.replyPrivate(message, 'Add `' + resource.title + '`')
 })
