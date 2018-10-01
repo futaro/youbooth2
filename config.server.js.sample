@@ -20,5 +20,8 @@ module.exports = {
   slack   : {
     "clientId"    : "111111.111111",
     "clientSecret": "xxxxxxxxxxxx"
-  }
+  },
+     youtube: {
+       api_key: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+     }
 }

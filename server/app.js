@@ -4,9 +4,7 @@ const AppServer = require('./src/server')
   , slackBot    = require('./src/bot')
   , Store       = require('./src/store')
 
-
 const interval = 5000
-
 
 async function play(workspace, channel) {
 
@@ -32,9 +30,9 @@ async function play(workspace, channel) {
   track.isPlayed = 1
   await track.save()
 
-  setTimeout(() => {
+  setTimeout(async () => {
     store.nowPlayingID = null
-    play(workspace, channel)
+    await play(workspace, channel)
   }, track.duration * 1000 + interval)
 }
 
@@ -46,7 +44,6 @@ server.addHandler('hello', async req => {
         channel   = req.data.channel || false
 
   const store = Store.factory(workspace, channel)
-
 
   if (!store.nowPlayingID) return
 
