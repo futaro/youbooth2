@@ -1,6 +1,5 @@
 <template>
   <div id="player"></div>
-  <!--<iframe :src="src" @load="onLoad" type="text/html" ref="player" frameborder="0" allowfullscreen></iframe>-->
 </template>
 
 <script>
@@ -16,18 +15,15 @@
       }
     },
 
-    // computed: {
-    //   src() {
-    //     if (this.value) {
-    //       return `http://www.youtube.com/embed/${this.value}?enablejsapi=1&autoplay=1&startSeconds=${this.from}&origin=http://y.futa.ro`
-    //     } else {
-    //       return null
-    //     }
-    //   }
-    // },
+    computed: {
+      video_id() {
+        return this.value
+      }
+    },
 
-    watch: {
-      value(val) {
+    video_id: {
+      value: function(val) {
+        console.log(val)
         if (val) {
           this.player = new window.YT.Player('player', {
             videoId: val,

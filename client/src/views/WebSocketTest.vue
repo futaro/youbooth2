@@ -70,8 +70,7 @@
         if (data.track.type === 'niconico') {
           this.nico_uid = data.track.uid
           this.from     = data.from
-        }
-        if (data.track.type === 'youtube') {
+        } else if (data.track.type === 'youtube') {
           this.youtube_uid = data.track.uid
           this.from        = data.from
         }
