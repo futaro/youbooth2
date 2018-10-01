@@ -8,58 +8,38 @@ const interval = 3000
 
 async function play(workspace, channel) {
 
-  const track = await Track.getUnPlayedTrack(workspace, channel)
+  let track     = await Track.getUnPlayedTrack(workspace, channel)
+    , is_random = false
+
+  if (!track) {
+    track     = await Track.getRandomTrack(workspace, channel)
+    is_random = true
+  }
 
   const store = Store.factory(workspace, channel)
 
-  if (!track) {
+  store.nowPlayingID = track.id
+  store.startTime    = (new Date()).getTime()
+  store.is_random    = is_random
 
-    const random_track = await Track.getRandomTrack(workspace, channel)
-    if (!random_track) return
+  server.broadcast(JSON.stringify({
+    action: 'play',
+    data  : {
+      workspace: workspace,
+      channel  : channel,
+      track    : track,
+      from     : 0,
+      is_random: is_random
+    }
+  }))
 
-    store.nowPlayingID = random_track.id
-    store.startTime    = (new Date()).getTime()
+  track.isPlayed = 1
+  await track.save()
 
-    server.broadcast(JSON.stringify({
-      action: 'play',
-      data  : {
-        workspace: workspace,
-        channel  : channel,
-        track    : random_track,
-        from     : 0,
-        is_random: true
-      }
-    }))
-
-    setTimeout(async () => {
-      store.nowPlayingID = null
-      await play(workspace, channel)
-    }, random_track.duration * 1000 + interval)
-
-  } else {
-
-    store.nowPlayingID = track.id
-    store.startTime    = (new Date()).getTime()
-
-    server.broadcast(JSON.stringify({
-      action: 'play',
-      data  : {
-        workspace: workspace,
-        channel  : channel,
-        track    : track,
-        from     : 0,
-        is_random: false
-      }
-    }))
-
-    track.isPlayed = 1
-    await track.save()
-
-    setTimeout(async () => {
-      store.nowPlayingID = null
-      await play(workspace, channel)
-    }, track.duration * 1000 + interval)
-  }
+  setTimeout(async () => {
+    store.nowPlayingID = null
+    await play(workspace, channel)
+  }, track.duration * 1000 + interval)
 
 }
 
@@ -159,7 +139,11 @@ slackBot.on('slash_command', async (bot, message) => {
 
   await track.save()
 
-  if (!store.nowPlayingID) await play(workspace, channel)
+  if (!store.nowPlayingID) {
+    await play(workspace, channel)
+  } else if (store.nowPlayingID && store.store.is_random) {
+    await play(workspace, channel)
+  }
 
   bot.replyPrivate(message, 'Add `' + resource.title + '`')
 })

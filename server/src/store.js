@@ -7,7 +7,7 @@ class Store {
     if (store) {
       return store
     } else {
-      const s =  new Store(workspace, channel)
+      const s = new Store(workspace, channel)
       _instances.push(s)
       return s
     }
@@ -18,6 +18,7 @@ class Store {
     this.channel       = channel
     this._nowPlayingID = null
     this._startTime    = 0
+    this._is_random    = false
   }
 
   get nowPlayingID() {
@@ -34,6 +35,14 @@ class Store {
 
   set startTime(val) {
     this._startTime = val
+  }
+
+  get is_random() {
+    return this._is_random
+  }
+
+  set is_random(val) {
+    this._is_random = val
   }
 }
 
