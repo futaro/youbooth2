@@ -8,24 +8,21 @@ const interval = 3000
 
 async function play(workspace, channel) {
 
+  let is_random = false
   let track     = await Track.getUnPlayedTrack(workspace, channel)
-    , is_random = false
-
-  console.log('track: ', track.title)
 
   if (!track) {
-    track     = await Track.getRandomTrack(workspace, channel)
     is_random = true
-    console.log('random_track: ', track.title)
+    track     = await Track.getRandomTrack(workspace, channel)
   }
+
+  if (!track) return
 
   const store = Store.factory(workspace, channel)
 
   store.nowPlayingID = track.id
   store.startTime    = (new Date()).getTime()
   store.isRandom     = is_random
-
-  console.log(store)
 
   server.broadcast(JSON.stringify({
     action: 'play',
