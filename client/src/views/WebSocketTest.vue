@@ -59,6 +59,7 @@
       },
 
       play(data) {
+        console.log('play()', this.workspace, data.workspace, this.channel, data.channel)
         if (this.workspace !== data.workspace || this.channel !== data.channel) {
           console.log('other workspace or channel. skip.')
           return
