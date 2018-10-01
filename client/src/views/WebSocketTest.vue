@@ -1,7 +1,10 @@
 <template>
   <div>
+    <!--<input type="text" v-model="url">-->
+    <!--<button @click.prevent="send">submit</button>-->
     <NicoPlayer v-if="nico_uid" v-model="nico_uid" :from="from" />
-    <YouTubePlayer v-if="youtube_uid" v-model="youtube_uid" :from="from" />
+    <YouTubePlayer v-else-if="youtube_uid && youtube_api" v-model="youtube_uid" :from="from" />
+    <div v-else>...</div>
   </div>
 </template>
 <script>
@@ -23,7 +26,21 @@
         youtube_uid: null,
         from       : 0,
         workspace  : null,
-        channel    : null
+        channel    : null,
+
+        url: 'https://www.youtube.com/watch?v=5-9I7oD5Uiw'
+      }
+    },
+
+    computed: {
+      youtube_api() {
+        return !!window.YT
+      }
+    },
+
+    watch: {
+      youtube_uid(new_val, old_val) {
+        console.log('new_val', new_val, 'old_val', old_val)
       }
     },
 
@@ -67,6 +84,8 @@
           console.log('other workspace or channel. skip.')
           return
         }
+        this.youtube_uid = null
+        this.nico_uid    = null
         if (data.track.type === 'niconico') {
           this.nico_uid = data.track.uid
           this.from     = data.from
@@ -74,7 +93,19 @@
           this.youtube_uid = data.track.uid
           this.from        = data.from
         }
+      },
+
+      send() {
+        this.ws.send(JSON.stringify({
+          action: 'debug',
+          data  : {
+            url      : this.url,
+            workspace: this.workspace,
+            channel  : this.channel
+          }
+        }))
       }
+
     }
   }
 </script>

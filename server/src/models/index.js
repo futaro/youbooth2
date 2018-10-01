@@ -14,6 +14,6 @@ const connection = new Sequelize(
 
 const Track = require('./track')(connection)
 
-Track.sync()
+Track.sync({force:true})
 
 module.exports = {Track}

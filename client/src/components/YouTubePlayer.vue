@@ -1,5 +1,7 @@
 <template>
-  <iframe :src="src" @load="onLoad" ref="player" frameborder="0" allowfullscreen></iframe>
+  <div id="wrapper">
+    <div id="player"></div>
+  </div>
 </template>
 
 <script>
@@ -9,46 +11,40 @@
 
     props: ['value', 'from'],
 
-    computed: {
-      src() {
-        if (this.value) {
-          return `https://www.youtube.com/embed/${this.value}?enablejsapi=1&autoplay=1&origin=http%3A%2F%2Fy.futa.ro&widgetid=1`
-        } else {
-          return null
-        }
+    data() {
+      return {
+        player: null
       }
     },
 
-    created() {
-      window.removeEventListener('message', e => this.onMessage(e))
-      window.addEventListener('message', e => this.onMessage(e))
+    mounted() {
+      this.player = new window.YT.Player('player', {
+        videoId: this.value,
+        height : '100%',
+        width  : '100%',
+        events : {
+          'onReady'      : (e) => {
+            e.target.seekTo(this.from, true)
+            e.target.playVideo();
+          },
+          'onStateChange': this.onStateChange
+        }
+      })
     },
 
     methods: {
-
-      onMessage(e) {
-        if (e.origin === 'https://www.youtube.com') {
-          if (e.data.eventName === 'playerStatusChange') {
-            console.log(e.data.data.playerStatus)
-            if (e.data.data.playerStatus === 4) {
-              this.$emit('input', null)
-            }
-          }
+      onStateChange(e) {
+        if (e.data === 0) {
+          console.log('end', this.$emit)
+          this.$emit('input', null)
         }
-      },
-
-      onLoad() {
-        this.$refs.player.contentWindow.postMessage(
-          '{"event":"command","func":"seekTo","args":[' + this.from + ', true]}',
-          'https://www.youtube.com/'
-        )
       }
     }
   }
 </script>
 
 <style scoped>
-  iframe {
+  #wrapper {
     width  : 100vw;
     height : 100vh;
   }
