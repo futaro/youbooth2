@@ -83,5 +83,17 @@ Track.__proto__.getUnPlayedTrack = async function (workspace, channel) {
     order: ['createdAt']
   })
 }
+Track.__proto__.getRandomTrack   = async function (workspace, channel) {
+  return await this.findOne({
+    where: {
+      workspace: workspace,
+      channel  : channel,
+      isPlayed : 1
+    },
+    order: [
+      Sequelize.fn('RAND')
+    ]
+  })
+}
 
 module.exports = Track

@@ -10,25 +10,46 @@ async function play(workspace, channel) {
 
   const track = await Track.getUnPlayedTrack(workspace, channel)
 
-  if (!track) return
-
   const store = Store.factory(workspace, channel)
 
-  store.nowPlayingID = track.id
-  store.startTime    = (new Date()).getTime()
+  if (!track) {
 
-  server.broadcast(JSON.stringify({
-    action: 'play',
-    data  : {
-      workspace: workspace,
-      channel  : channel,
-      track    : track,
-      from     : 0
-    }
-  }))
+    const random_rack = await Track.getRandomTrack(workspace, channel)
+    if (!random_rack) return
 
-  track.isPlayed = 1
-  await track.save()
+    store.nowPlayingID = random_rack.id
+    store.startTime    = (new Date()).getTime()
+
+    server.broadcast(JSON.stringify({
+      action: 'play',
+      data  : {
+        workspace: workspace,
+        channel  : channel,
+        track    : random_rack,
+        from     : 0,
+        is_random: true
+      }
+    }))
+
+  } else {
+
+    store.nowPlayingID = track.id
+    store.startTime    = (new Date()).getTime()
+
+    server.broadcast(JSON.stringify({
+      action: 'play',
+      data  : {
+        workspace: workspace,
+        channel  : channel,
+        track    : track,
+        from     : 0,
+        is_random: false
+      }
+    }))
+
+    track.isPlayed = 1
+    await track.save()
+  }
 
   setTimeout(async () => {
     store.nowPlayingID = null
@@ -45,7 +66,10 @@ server.addHandler('hello', async req => {
 
   const store = Store.factory(workspace, channel)
 
-  if (!store.nowPlayingID) return
+  if (!store.nowPlayingID) {
+    await play(workspace, channel)
+    return
+  }
 
   const track = await Track.findById(store.nowPlayingID)
 
@@ -68,7 +92,7 @@ server.addHandler('debug', async req => {
 
   const workspace = req.data.workspace || false,
         channel   = req.data.channel || false
-console.log(workspace, channel)
+  console.log(workspace, channel)
   const store = Store.factory(workspace, channel)
 
   const resource = await Resource.factory(req.data.url)
