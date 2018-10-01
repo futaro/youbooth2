@@ -1,7 +1,7 @@
 <template>
   <div>
     <NicoPlayer v-if="nico_uid" v-model="nico_uid" :from="from" />
-    <YouTubePlayer v-if="youtube_uid" v-model="nico_uid" :from="from" />
+    <YouTubePlayer v-if="youtube_uid" v-model="youtube_uid" :from="from" />
   </div>
 </template>
 <script>
