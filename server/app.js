@@ -11,12 +11,12 @@ async function play(workspace, channel) {
   let track     = await Track.getUnPlayedTrack(workspace, channel)
     , is_random = false
 
-  console.log('track: ', track)
+  console.log('track: ', track.title)
 
   if (!track) {
     track     = await Track.getRandomTrack(workspace, channel)
     is_random = true
-    console.log('random_track: ', track)
+    console.log('random_track: ', track.title)
   }
 
   const store = Store.factory(workspace, channel)
@@ -38,8 +38,10 @@ async function play(workspace, channel) {
     }
   }))
 
-  track.isPlayed = 1
-  await track.save()
+  if (!is_random) {
+    track.isPlayed = 1
+    await track.save()
+  }
 
   setTimeout(async () => {
     store.nowPlayingID = null
