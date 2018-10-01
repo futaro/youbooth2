@@ -20,7 +20,7 @@ async function play(workspace, channel) {
 
   store.nowPlayingID = track.id
   store.startTime    = (new Date()).getTime()
-  store.is_random    = is_random
+  store.isRandom    = is_random
 
   server.broadcast(JSON.stringify({
     action: 'play',
@@ -141,7 +141,7 @@ slackBot.on('slash_command', async (bot, message) => {
 
   if (!store.nowPlayingID) {
     await play(workspace, channel)
-  } else if (store.nowPlayingID && store.store.is_random) {
+  } else if (store.nowPlayingID && store.store.isRandom) {
     await play(workspace, channel)
   }
 

@@ -18,7 +18,7 @@ class Store {
     this.channel       = channel
     this._nowPlayingID = null
     this._startTime    = 0
-    this._is_random    = false
+    this._isRandom     = false
   }
 
   get nowPlayingID() {
@@ -37,12 +37,12 @@ class Store {
     this._startTime = val
   }
 
-  get is_random() {
-    return this._is_random
+  get isRandom() {
+    return this._isRandom
   }
 
-  set is_random(val) {
-    this._is_random = val
+  set isRandom(val) {
+    this._isRandom = val
   }
 }
 
