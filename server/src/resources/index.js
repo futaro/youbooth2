@@ -1,4 +1,5 @@
-const Nico = require('./Nico')
+const Nico    = require('./Nico'),
+      YouTube = require('./YouTube')
 
 class Resource {
 
@@ -7,6 +8,10 @@ class Resource {
     const nico = new Nico(url)
     await nico.match()
     if (nico.isValid()) return nico
+
+    const yt = new YouTube(url)
+    await yt.match()
+    if (yt.isValid()) return yt
 
     return null
   }
