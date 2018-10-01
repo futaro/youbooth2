@@ -34,11 +34,12 @@ class YouTube {
       wget({url: url, dest: '/dev/null'}, function (error, response, body) {
         if (error) return reject(error)
 
+        body = JSON.parse(body)
 
         resolve({
-          title      : response.items[0].snippet.title,
-          description: response.items[0].snippet.description,
-          duration   : moment.duration(response.items[0].contentDetails.duration).asSeconds()
+          title      : body.items[0].snippet.title,
+          description: body.items[0].snippet.description,
+          duration   : moment.duration(body.items[0].contentDetails.duration).asSeconds()
         })
       })
     })
