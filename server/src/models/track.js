@@ -7,6 +7,10 @@ let Track = connection => {
       primaryKey   : true,
       autoIncrement: true
     },
+    workspace  : {
+      type     : Sequelize.STRING(255),
+      allowNull: false
+    },
     channel    : {
       type     : Sequelize.STRING(255),
       allowNull: false
@@ -35,6 +39,16 @@ let Track = connection => {
       type     : Sequelize.CHAR(64),
       allowNull: false
     },
+    good       : {
+      type     : Sequelize.INTEGER,
+      allowNull: false,
+      default  : 0
+    },
+    bad        : {
+      type     : Sequelize.INTEGER,
+      allowNull: false,
+      default  : 0
+    },
     createdAt  : {
       type        : Sequelize.DATE,
       defaultValue: Sequelize.NOW,
@@ -50,6 +64,10 @@ let Track = connection => {
       {
         name  : 'is_played_index',
         fields: ['isPlayed']
+      },
+      {
+        name  : 'requested_by_index',
+        fields: ['requestedBy']
       }
     ]
   })

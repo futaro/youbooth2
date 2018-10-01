@@ -2,22 +2,24 @@ const AppServer = require('./src/server')
   , {Track}     = require('./src/models')
   , Resource    = require('./src/resources')
   , slackBot    = require('./src/bot')
+  , Store       = require('./src/store')
+
 
 const interval = 5000
 
-let nowPlayingID = null,
-    startTime    = 0
 
-async function play() {
+async function play(workspace, channel) {
 
   const track = await Track.getUnPlayedTrack()
 
   if (!track) return
 
-  nowPlayingID = track.id
-  startTime    = (new Date()).getTime()
+  const store = Store.factory(workspace, channel)
 
-  app.broadcast(JSON.stringify({
+  store.nowPlayingID = track.id
+  store.startTime    = (new Date()).getTime()
+
+  server.broadcast(JSON.stringify({
     action: 'play',
     data  : {
       track: track,
@@ -29,18 +31,24 @@ async function play() {
   await track.save()
 
   setTimeout(() => {
-    nowPlayingID = null
-    play()
+    store.nowPlayingID = null
+    play(workspace, channel)
   }, track.duration * 1000 + interval)
 }
 
-const app = new AppServer()
+const server = new AppServer()
 
-app.addHandler('hello', async req => {
+server.addHandler('hello', async req => {
 
-  if (!nowPlayingID) return
+  const workspace = req.data.workspace || false,
+        channel   = req.data.channel || false
 
-  const track = await Track.findById(nowPlayingID)
+  const store = Store.factory(workspace, channel)
+
+
+  if (!store.nowPlayingID) return
+
+  const track = await Track.findById(store.nowPlayingID)
 
   if (!track) return
 
@@ -48,20 +56,22 @@ app.addHandler('hello', async req => {
     action: 'play',
     data  : {
       track: track,
-      from : parseInt(((new Date()).getTime() - startTime) / 1000)
+      from : parseInt(((new Date()).getTime() - store.startTime) / 1000)
     }
   }
 })
 
-app.listen()
+server.listen()
 
 slackBot.on('slash_command', async (bot, message) => {
 
-  const url = message.text
+  const url     = message.text
+    , workspace = message.team_domain
+    , channel   = message.channel_name
+
+  const store = Store.factory(workspace, channel)
 
   const resource = await Resource.factory(url)
-  console.log(resource)
-
 
   if (!resource) {
     bot.replyPrivate(message, '?')
@@ -70,7 +80,8 @@ slackBot.on('slash_command', async (bot, message) => {
 
   let track = new Track()
 
-  track.channel     = message.channel_name
+  track.workspace   = workspace
+  track.channel     = channel
   track.type        = resource.type
   track.uid         = resource.uid
   track.title       = resource.title
@@ -80,7 +91,7 @@ slackBot.on('slash_command', async (bot, message) => {
 
   await track.save()
 
-  if (!nowPlayingID) play()
+  if (!store.nowPlayingID) play(workspace, channel)
 
   bot.replyPrivate(message, 'Add `' + resource.title + '`')
 })

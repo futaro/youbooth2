@@ -9,6 +9,11 @@ export default new Router({
       path : '/',
       name : 'home',
       component : () => import('./views/WebSocketTest.vue')
+    },
+    {
+      path : '/:workspace/:channel',
+      name : 'booth',
+      component : () => import('./views/WebSocketTest.vue')
     }
   ]
 })

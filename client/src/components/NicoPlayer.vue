@@ -5,11 +5,11 @@
 <script>
   export default {
 
-    name : 'NicoPlayer',
+    name: 'NicoPlayer',
 
-    props : ['value', 'from'],
+    props: ['value', 'from'],
 
-    computed : {
+    computed: {
       src() {
         if (this.value) {
           return `http://embed.nicovideo.jp/watch/${this.value}?jsapi=1&from=${this.from}`
@@ -20,23 +20,27 @@
     },
 
     created() {
-      window.addEventListener('message', (e) => {
+      window.removeEventListener('message', e => this.onMessage(e))
+      window.addEventListener('message', e => this.onMessage(e))
+    },
+
+    methods: {
+
+      onMessage(e) {
         if (e.origin === 'http://embed.nicovideo.jp') {
-          if (e.data.eventName === 'playerStatusChange'){
+          if (e.data.eventName === 'playerStatusChange') {
             console.log(e.data.data.playerStatus)
             if (e.data.data.playerStatus === 4) {
               this.$emit('input', null)
             }
           }
         }
-      });
-    },
+      },
 
-    methods : {
       onLoad() {
         this.$refs.player.contentWindow.postMessage({
-          sourceConnectorType : 1,
-          eventName           : 'play'
+          sourceConnectorType: 1,
+          eventName          : 'play'
         }, 'http://embed.nicovideo.jp/')
       }
     }
@@ -45,7 +49,7 @@
 
 <style scoped>
   iframe {
-    width: 100vw;
-    height: 100vh;
+    width  : 100vw;
+    height : 100vh;
   }
 </style>

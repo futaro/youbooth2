@@ -6,7 +6,7 @@
 <script>
 
   import NicoPlayer from '../components/NicoPlayer'
-  import configs from '../../../config.client'
+  import configs    from '../../../config.client'
 
   export default {
 
@@ -23,16 +23,17 @@
     },
 
     created() {
-      this.connect()
+      this.connect(this.$route.params['workspace'], this.$route.params['channel'])
     },
 
     methods: {
 
-      connect() {
+      connect(workspace, channel) {
+        if (this.ws !== null) return
         this.ws = new WebSocket(configs.ws, ['echo-protocol', 'soap', 'xmpp'])
 
         this.ws.onopen = _ => {
-          this.ws.send(JSON.stringify({action: 'hello'}))
+          this.ws.send(JSON.stringify({action: 'hello', data: {workspace: workspace, channel: channel}}))
         }
 
         this.ws.onerror = error => {
@@ -41,10 +42,9 @@
 
         this.ws.onmessage = e => {
           const response = JSON.parse(e.data)
-          if (response.action) {
-            if (response.action === 'play') {
-              this.play(response.data)
-            }
+          if (!response.action) return
+          if (response.action === 'play') {
+            this.play(response.data)
           }
         }
 
@@ -57,7 +57,7 @@
       play(data) {
         if (data.track.type === 'niconico') {
           this.nico_uid = data.track.uid
-          this.from = data.from
+          this.from     = data.from
         }
       }
     }
