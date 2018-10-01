@@ -16,24 +16,28 @@
 
     data() {
       return {
-        ws      : null,
-        nico_uid: null,
-        from    : 0
+        ws       : null,
+        nico_uid : null,
+        from     : 0,
+        workspace: null,
+        channel  : null
       }
     },
 
     created() {
-      this.connect(this.$route.params['workspace'], this.$route.params['channel'])
+      this.workspace = this.$route.params['workspace']
+      this.channel   = this.$route.params['channel']
+      this.connect()
     },
 
     methods: {
 
-      connect(workspace, channel) {
+      connect() {
         if (this.ws !== null) return
         this.ws = new WebSocket(configs.ws, ['echo-protocol', 'soap', 'xmpp'])
 
         this.ws.onopen = _ => {
-          this.ws.send(JSON.stringify({action: 'hello', data: {workspace: workspace, channel: channel}}))
+          this.ws.send(JSON.stringify({action: 'hello', data: {workspace: this.workspace, channel: this.channel}}))
         }
 
         this.ws.onerror = error => {
@@ -55,6 +59,10 @@
       },
 
       play(data) {
+        if (this.workspace !== data.workspace || this.channel !== data.channel) {
+          console.log('other workspace or channel. skip.')
+          return
+        }
         if (data.track.type === 'niconico') {
           this.nico_uid = data.track.uid
           this.from     = data.from

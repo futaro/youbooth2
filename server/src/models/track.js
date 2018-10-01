@@ -40,14 +40,14 @@ let Track = connection => {
       allowNull: false
     },
     good       : {
-      type     : Sequelize.INTEGER,
-      allowNull: false,
-      default  : 0
+      type        : Sequelize.INTEGER,
+      allowNull   : false,
+      defaultValue: 0
     },
     bad        : {
-      type     : Sequelize.INTEGER,
-      allowNull: false,
-      default  : 0
+      type        : Sequelize.INTEGER,
+      allowNull   : false,
+      defaultValue: 0
     },
     createdAt  : {
       type        : Sequelize.DATE,

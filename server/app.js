@@ -22,8 +22,10 @@ async function play(workspace, channel) {
   server.broadcast(JSON.stringify({
     action: 'play',
     data  : {
-      track: track,
-      from : 0
+      workspace: workspace,
+      channel  : channel,
+      track    : track,
+      from     : 0
     }
   }))
 
@@ -55,8 +57,10 @@ server.addHandler('hello', async req => {
   return {
     action: 'play',
     data  : {
-      track: track,
-      from : parseInt(((new Date()).getTime() - store.startTime) / 1000)
+      workspace: workspace,
+      channel  : channel,
+      track    : track,
+      from     : parseInt(((new Date()).getTime() - store.startTime) / 1000)
     }
   }
 })
@@ -88,6 +92,8 @@ slackBot.on('slash_command', async (bot, message) => {
   track.duration    = resource.duration
   track.isPlayed    = 0
   track.requestedBy = message.user_name
+  track.good        = 0
+  track.bad         = 0
 
   await track.save()
 
