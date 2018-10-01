@@ -10,7 +10,7 @@ const interval = 5000
 
 async function play(workspace, channel) {
 
-  const track = await Track.getUnPlayedTrack()
+  const track = await Track.getUnPlayedTrack(workspace, channel)
 
   if (!track) return
 

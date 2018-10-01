@@ -73,10 +73,12 @@ let Track = connection => {
   })
 }
 
-Track.__proto__.getUnPlayedTrack = async function () {
+Track.__proto__.getUnPlayedTrack = async function (workspace, channel) {
   return await this.findOne({
     where: {
-      isPlayed: 0
+      workspace: workspace,
+      channel  : channel,
+      isPlayed : 0
     },
     order: ['createdAt']
   })
