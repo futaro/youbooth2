@@ -22,6 +22,7 @@ class Store {
     this._nowPlayingID = null
     this._startTime    = 0
     this._isRandom     = false
+    this._timerID      = false
   }
 
   get nowPlayingID() {
@@ -46,6 +47,14 @@ class Store {
 
   set isRandom(val) {
     this._isRandom = val
+  }
+
+  get timerID() {
+    return this._timerID
+  }
+
+  set timerID(val) {
+    this._timerID = val
   }
 
   dump() {
