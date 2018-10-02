@@ -54,13 +54,14 @@ async function play(workspace, channel) {
   track.isPlayed = 1
   await track.save()
 
-  if (store.timerID) clearInterval(store.timerID)
+  if (store.timerID) clearTimeout(store.timerID)
 
   store.timerID = setTimeout(async () => {
     store.nowPlayingID = null
     store.dump()
     await play(workspace, channel)
   }, track.duration * 1000 + interval)
+  logger.debug(`clearInterval(${store.timerID})`)
 
 }
 
