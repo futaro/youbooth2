@@ -43,9 +43,9 @@ async function play(workspace, channel) {
   console.debug(que)
   server.broadcast(JSON.stringify(que))
   this.bot.say({
-    channel  : channel,
-    text     : `now playing ... \`${track.title}\` ${is_random ? '(random)' : ''}`,
-    user_name: 'DJ'
+    channel : channel,
+    text    : `now playing ... \`${track.title}\` ${is_random ? '(random)' : ''}`,
+    username: 'DJ'
   })
 
 
