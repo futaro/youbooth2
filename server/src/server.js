@@ -29,14 +29,14 @@ class Server {
       return
     }
     this._connection = req.accept('echo-protocol', req.origin)
-    logger.debug(`Connection accepted.`)
+    // logger.debug(`Connection accepted.`)
     this._connection.on('message', this.onMessage.bind(this))
     this._connection.on('close', this.onClose.bind(this))
   }
 
   async onMessage(message) {
     if (message.type === 'utf8') {
-      logger.debug('Received Message: ' + message.utf8Data)
+      // logger.debug('Received Message: ' + message.utf8Data)
 
       try {
         const parsedMessage = JSON.parse(message.utf8Data)
@@ -57,7 +57,7 @@ class Server {
   }
 
   onClose(reasonCode, description) {
-    logger.debug(`Peer ${this._connection.remoteAddress} disconnected.`)
+    // logger.debug(`Peer ${this._connection.remoteAddress} disconnected.`)
   }
 
   addHandler(action, callback) {

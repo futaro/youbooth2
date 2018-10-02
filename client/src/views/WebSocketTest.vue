@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div id="disconnect" v-if="!ws">LOSE CONNECTION.</div>
     <!--<input type="text" v-model="url">-->
     <!--<button @click.prevent="send">submit</button>-->
     <NicoPlayer v-if="nico_uid" v-model="nico_uid" :from="from" />
@@ -109,3 +110,20 @@
     }
   }
 </script>
+
+<style scoped>
+  #disconnect {
+    position         : absolute;
+    top              : 0;
+    left             : 0;
+    height           : 100vh;
+    width            : 100vw;
+    z-index          : 999;
+    background-color : rgba(0, 0, 0, 0.5);
+    text-align       : center;
+    line-height      : 100vh;
+    letter-spacing   : 0.2rem;
+    color            : #AAA;
+    font-size        : 12px;
+  }
+</style>

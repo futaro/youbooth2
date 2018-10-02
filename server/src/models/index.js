@@ -6,14 +6,15 @@ const connection = new Sequelize(
   db.user,
   db.pass,
   {
-    dialect : 'mysql',
-    host    : db.host,
-    port    : db.port
+    dialect: 'mysql',
+    host   : db.host,
+    port   : db.port,
+    logging: false
   }
 )
 
 const Track = require('./track')(connection)
 
-Track.sync()
+Track.sync({force:true})
 
 module.exports = {Track}

@@ -1,3 +1,5 @@
+const logger = require('./logger')
+
 const _instances = []
 
 class Store {
@@ -7,7 +9,7 @@ class Store {
     if (store) {
       return store
     } else {
-      console.log('new store!!!!!!!!')
+      logger.info(`new store ${workspace}/${channel}`)
       const s = new Store(workspace, channel)
       _instances.push(s)
       return s
@@ -44,6 +46,10 @@ class Store {
 
   set isRandom(val) {
     this._isRandom = val
+  }
+
+  dump() {
+    logger.debug(this.workspace + '/' + this.channel + ' ' + this._nowPlayingID + '/' + this._startTime + '/' + this._isRandom)
   }
 }
 
