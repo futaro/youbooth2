@@ -54,15 +54,17 @@ async function play(workspace, channel) {
   track.isPlayed = 1
   await track.save()
 
-  if (store.timerID) clearTimeout(store.timerID)
+  if (store.timerID) {
+    logger.debug(`clearTimeout(${store.timerID})`)
+    clearTimeout(store.timerID)
+  }
 
   store.timerID = setTimeout(async () => {
     store.nowPlayingID = null
     store.dump()
     await play(workspace, channel)
   }, track.duration * 1000 + interval)
-  logger.debug(`clearInterval(${store.timerID})`)
-
+  logger.debug(`setTimeout(${store.timerID})`)
 }
 
 async function add(url, workspace, channel, user_name) {
