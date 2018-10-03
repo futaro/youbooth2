@@ -116,7 +116,7 @@ async function search_youtube(keyword) {
       "attachments": [
         {
           "fallback"       : "fallback string",
-          "title"          : `\`${video.title}\` ${video.description} [https://www.youtube.com/watch?v=${video.id}]`,
+          "title"          : `\`${video.title}\` \n ${video.description} \n [https://www.youtube.com/watch?v=${video.id}] \n ${video.thumbnail}`,
           "callback_id"    : "callback_id value",
           "color"          : "#455da2",
           "attachment_type": "default",
@@ -198,8 +198,8 @@ slackBot.on('slash_command', async (bot, message) => {
     })
   } else if (message['command'] === '/youtube') {
     let messages = await search_youtube(text)
-    messages.map(m => {
-      bot.replyPrivate(message, m)
-    })
+    // messages.map(m => {
+      bot.replyPrivate(message, messages)
+    // })
   }
 })
