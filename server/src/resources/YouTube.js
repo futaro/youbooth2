@@ -53,7 +53,7 @@ class YouTube {
     return new Promise((resolve, reject) => {
       api.addParam('type', 'video')
       api.addParam('videoEmbeddable', 'true')
-      api.search(keyword, 30, function (error, result) {
+      api.search(keyword, 3, function (error, result) {
         if (error) {
           reject(error)
         } else {
@@ -67,7 +67,8 @@ class YouTube {
                   return {
                     id         : item.id.videoId,
                     title      : item.snippet.title,
-                    description: item.snippet.description
+                    description: item.snippet.description,
+                    thumbnail  : item.snippet.thumbnails.default
                   }
                 }))
           } else {

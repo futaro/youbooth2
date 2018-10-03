@@ -111,10 +111,30 @@ async function search_youtube(keyword) {
   const videos = await YouTube.search(keyword)
   let message  = []
   videos.map(video => {
-    message.push(`${video.title} [https://www.youtube.com/watch?v=${video.id}]` + "\n" + video.description)
+    message.push({
+      "text"       : `検索結果`,
+      "attachments": [
+        {
+          "fallback"       : "fallback string",
+          "title"          : `\`${video.title}\` ${video.description} [https://www.youtube.com/watch?v=${video.id}]`,
+          "callback_id"    : "callback_id value",
+          "color"          : "#455da2",
+          "attachment_type": "default",
+          "actions"        : [
+            {
+              "name" : "addYouTubeButton",
+              "text" : "Add Track",
+              "type" : "button",
+              "style": "primary",
+              "value": video.id
+            }
+          ]
+        }
+      ]
+    })
   })
 
-  return message.join("\n\n")
+  return message
 }
 
 const server = new AppServer()
@@ -177,6 +197,9 @@ slackBot.on('slash_command', async (bot, message) => {
       bot.replyPrivate(message, await add(text, workspace, channel, real_name))
     })
   } else if (message['command'] === '/youtube') {
-    bot.replyPrivate(message, await search_youtube(text))
+    let messages = await search_youtube(text)
+    messages.map(m => {
+      bot.replyPrivate(message, m)
+    })
   }
 })
