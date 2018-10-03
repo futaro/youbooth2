@@ -109,26 +109,27 @@ async function add(url, workspace, channel, user_name) {
 async function search_youtube(keyword) {
 
   const videos = await YouTube.search(keyword)
-  let message  = []
+  let message  = {
+    "text"       : `Search Results`,
+    "attachments": []
+  }
   videos.map(video => {
-    message.push({
-      "text"       : `検索結果`,
-      "attachments": [
+    message.attachments.push({
+      "fallback"       : "fallback string",
+      "title"          : video.title,
+      "title_link"     : `https://www.youtube.com/watch?v=${video.id}`,
+      "text"           : video.description,
+      "image_url"      : video.thumbnail.url,
+      "callback_id"    : "callback_id value",
+      "color"          : "#455da2",
+      "attachment_type": "default",
+      "actions"        : [
         {
-          "fallback"       : "fallback string",
-          "title"          : `\`${video.title}\` \n ${video.description} \n [https://www.youtube.com/watch?v=${video.id}] \n ${video.thumbnail.url}`,
-          "callback_id"    : "callback_id value",
-          "color"          : "#455da2",
-          "attachment_type": "default",
-          "actions"        : [
-            {
-              "name" : "addYouTubeButton",
-              "text" : "Add Track",
-              "type" : "button",
-              "style": "primary",
-              "value": video.id
-            }
-          ]
+          "name" : "addYouTubeButton",
+          "text" : "Add Track",
+          "type" : "button",
+          "style": "primary",
+          "value": video.id
         }
       ]
     })
@@ -196,6 +197,7 @@ slackBot.on('slash_command', async (bot, message) => {
       const {real_name} = response.user;
       bot.replyPrivate(message, await add(text, workspace, channel, real_name))
     })
+
   } else if (message['command'] === '/youtube') {
     let messages = await search_youtube(text)
     messages.map(m => {
