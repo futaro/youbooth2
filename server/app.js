@@ -120,7 +120,7 @@ async function search_youtube(keyword) {
       "title_link"     : `https://www.youtube.com/watch?v=${video.id}`,
       "text"           : video.description,
       "image_url"      : video.thumbnail.url,
-      "callback_id"    : "callback_id value",
+      "callback_id"    : "add_track_from_interaction",
       "color"          : "#455da2",
       "attachment_type": "default",
       "actions"        : [
@@ -194,13 +194,29 @@ slackBot.on('slash_command', async (bot, message) => {
 
   if (message['command'] === '/add') {
     bot.api.users.info({user: message.user}, async (error, response) => {
-      const {real_name} = response.user;
+      const {real_name} = response.user
       bot.replyPrivate(message, await add(text, workspace, channel, real_name))
     })
 
   } else if (message['command'] === '/youtube') {
-    bot.replyPrivate(message, await search_youtube(text)).catch(err => {
-      console.log(err)
-    })
+    bot.replyPrivate(message, await search_youtube(text))
   }
 })
+
+slackBot.on('interactive_message_callback', async (bot, message) => {
+
+  const url = 'https://www.youtube.com/watch?v=' + message.actions[0].value
+  const workspace = message.team.domain
+  const channel = message.raw_message.channel.name
+  const user = await getUserNameFromMessage(message)
+  bot.replyPrivate(message, await add(url, workspace, channel, user))
+})
+
+function getUserNameFromMessage(message) {
+  return new Promise((resolve, reject) => {
+    this.bot.api.users.info({user: message.user}, async (error, response) => {
+      if (error) return reject(error)
+      resolve(response.user.real_name)
+    })
+  })
+}
