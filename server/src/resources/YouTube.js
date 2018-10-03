@@ -1,6 +1,10 @@
-const wget = require('node-wget')
-  , moment = require('moment')
-  , config = require('../../../config.server')
+const wget      = require('node-wget')
+  , moment      = require('moment')
+  , config      = require('../../../config.server')
+  , YouTubeNode = require('youtube-node')
+
+const api = new YouTubeNode()
+api.setKey(config.youtube.api_key)
 
 class YouTube {
 
@@ -41,6 +45,35 @@ class YouTube {
           description: body.items[0].snippet.description,
           duration   : moment.duration(body.items[0].contentDetails.duration).asSeconds()
         })
+      })
+    })
+  }
+
+  static search(keyword) {
+    return new Promise((resolve, reject) => {
+      api.addParam('type', 'video')
+      api.addParam('videoEmbeddable', 'true')
+      api.search(keyword, 30, function (error, result) {
+        if (error) {
+          reject(error)
+        } else {
+          if (result.items.length) {
+            resolve(
+              result.items
+                .filter(item => {
+                  return !!item.id.videoId
+                })
+                .map(item => {
+                  return {
+                    id         : item.id.videoId,
+                    title      : item.snippet.title,
+                    description: item.snippet.description
+                  }
+                }))
+          } else {
+            resolve([])
+          }
+        }
       })
     })
   }

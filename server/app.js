@@ -4,6 +4,7 @@ const AppServer = require('./src/server')
   , slackBot    = require('./src/bot')
   , Store       = require('./src/store')
   , logger      = require('./src/logger')
+  , YouTube     = require('./src/resources/YouTube')
 
 const interval = 3000
 
@@ -45,6 +46,7 @@ async function play(workspace, channel) {
       username: 'DJ'
     })
 
+    // now playing はトピックスに表示させたいのだが・・・
     // this.bot.api.channels.setTopic({
     //   channel: channel,
     //   text   : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`
@@ -104,6 +106,17 @@ async function add(url, workspace, channel, user_name) {
   return 'Add `' + resource.title + '`'
 }
 
+async function search_youtube(keyword) {
+
+  const videos = await YouTube.search(keyword)
+  let message  = []
+  videos.map(video => {
+    message.push(`${video.title} [https://www.youtube.com/watch?v=${video.id}]` + "\n" + video.description)
+  })
+
+  return message.join("\n\n")
+}
+
 const server = new AppServer()
 
 server.addHandler('hello', async req => {
@@ -137,28 +150,33 @@ server.addHandler('hello', async req => {
 })
 
 // debug
-server.addHandler('debug', async req => {
-  logger.debug(`debug()`)
+server.addHandler('debug/add', async req => {
+  logger.debug(`debug/add()`)
   const url     = req.data.url
     , workspace = req.data.workspace || false
     , channel   = req.data.channel || false
     , user_name = 'debug'
   logger.debug(await add(url, workspace, channel, user_name))
 })
+server.addHandler('debug/youtube', async req => {
+  logger.debug(`debug/youtube()`)
+  const keyword = req.data.keyword
+  logger.debug(await search_youtube(keyword))
+})
 
 server.listen()
 
 slackBot.on('slash_command', async (bot, message) => {
-  const url     = message['text']
+  const text    = message['text']
     , workspace = message['team_domain']
     , channel   = message['channel_name']
 
   if (message['command'] === '/add') {
     bot.api.users.info({user: message.user}, async (error, response) => {
       const {real_name} = response.user;
-      bot.replyPrivate(message, await add(url, workspace, channel, real_name))
+      bot.replyPrivate(message, await add(text, workspace, channel, real_name))
     })
-  } else if (message['command'] === '/search') {
-
+  } else if (message['command'] === '/youtube') {
+    bot.replyPrivate(message, await search_youtube(text))
   }
 })
