@@ -111,6 +111,7 @@ async function search_youtube(keyword) {
   const videos = await YouTube.search(keyword)
   let message  = []
   videos.map(video => {
+    console.log(video.thumbnail)
     message.push({
       "text"       : `検索結果`,
       "attachments": [
@@ -198,8 +199,10 @@ slackBot.on('slash_command', async (bot, message) => {
     })
   } else if (message['command'] === '/youtube') {
     let messages = await search_youtube(text)
-    // messages.map(m => {
-      bot.replyPrivate(message, messages)
-    // })
+    messages.map(m => {
+      bot.replyPrivate(message, messages).catch(err => {
+        console.log(err)
+      })
+    })
   }
 })
