@@ -199,11 +199,8 @@ slackBot.on('slash_command', async (bot, message) => {
     })
 
   } else if (message['command'] === '/youtube') {
-    let messages = await search_youtube(text)
-    messages.map(m => {
-      bot.replyPrivate(message, m).catch(err => {
-        console.log(err)
-      })
+    bot.replyPrivate(message, await search_youtube(text)).catch(err => {
+      console.log(err)
     })
   }
 })
