@@ -44,7 +44,7 @@ async function play(workspace, channel) {
   if (this.bot) {
     this.bot.say({
       channel : channel,
-      text    : `now playing ... \`${track.title}\` requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`,
+      text    : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`,
       username: 'DJ'
     })
   }
