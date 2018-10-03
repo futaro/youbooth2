@@ -45,12 +45,12 @@ async function play(workspace, channel) {
       username: 'DJ'
     })
 
-    this.bot.api.channels.setTopic({
-      channel: channel,
-      text   : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`
-    }, (err, response) => {
-      console.log(err, response)
-    })
+    // this.bot.api.channels.setTopic({
+    //   channel: channel,
+    //   text   : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`
+    // }, (err, response) => {
+    //   console.log(err, response)
+    // })
   }
 
   track.isPlayed = 1
@@ -158,7 +158,7 @@ slackBot.on('slash_command', async (bot, message) => {
       const {real_name} = response.user;
       bot.replyPrivate(message, await add(url, workspace, channel, real_name))
     })
-  } else if (message['command'] === 'search') {
+  } else if (message['command'] === '/search') {
 
   }
 })
