@@ -7,7 +7,7 @@ const controller = botkit.slackbot({
 }).configureSlackApp({
   clientId    : configs.slack.clientId,
   clientSecret: configs.slack.clientSecret,
-  scopes      : ['commands', 'bot']
+  scopes      : ['commands', 'bot', 'channels.write']
 })
 
 controller.setupWebserver(configs.bot.port, (err, webserver) => {

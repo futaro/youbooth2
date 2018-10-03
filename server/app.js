@@ -22,12 +22,10 @@ async function play(workspace, channel) {
   if (!track) return
 
   const store = Store.factory(workspace, channel)
-  store.dump()
 
   store.nowPlayingID = track.id
   store.startTime    = (new Date()).getTime()
   store.isRandom     = is_random
-  store.dump()
 
   const que = {
     action: 'play',
@@ -39,7 +37,6 @@ async function play(workspace, channel) {
       is_random: is_random
     }
   }
-  console.debug(que)
   server.broadcast(JSON.stringify(que))
   if (this.bot) {
     this.bot.say({
@@ -47,8 +44,14 @@ async function play(workspace, channel) {
       text    : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`,
       username: 'DJ'
     })
-  }
 
+    this.bot.api.channels.setTopic({
+      channel: channel,
+      text   : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`
+    }, (err, response) => {
+      console.log(err, response)
+    })
+  }
 
   track.isPlayed = 1
   await track.save()
@@ -60,7 +63,6 @@ async function play(workspace, channel) {
 
   store.timerID = setTimeout(async () => {
     store.nowPlayingID = null
-    store.dump()
     await play(workspace, channel)
   }, track.duration * 1000 + interval)
   logger.debug(`setTimeout(${store.timerID})`)
@@ -71,7 +73,6 @@ async function add(url, workspace, channel, user_name) {
   logger.debug(`add(${url}, ${workspace}, ${channel}, ${user_name})`)
 
   const store = Store.factory(workspace, channel)
-  store.dump()
 
   const resource = await Resource.factory(url)
 
@@ -152,8 +153,12 @@ slackBot.on('slash_command', async (bot, message) => {
     , workspace = message['team_domain']
     , channel   = message['channel_name']
 
-  bot.api.users.info({user: message.user}, async (error, response) => {
-    const {real_name} = response.user;
-    bot.replyPrivate(message, await add(url, workspace, channel, real_name))
-  })
+  if (message['command'] === '/add') {
+    bot.api.users.info({user: message.user}, async (error, response) => {
+      const {real_name} = response.user;
+      bot.replyPrivate(message, await add(url, workspace, channel, real_name))
+    })
+  } else if (message['command'] === 'search') {
+
+  }
 })
