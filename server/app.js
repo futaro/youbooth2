@@ -15,7 +15,6 @@ async function play(workspace, channel) {
   let track     = await Track.getUnPlayedTrack(workspace, channel)
 
   if (!track) {
-    logger.debug('らんだむ！')
     is_random = true
     track     = await Track.getRandomTrack(workspace, channel)
   }
@@ -45,7 +44,7 @@ async function play(workspace, channel) {
   if (this.bot) {
     this.bot.say({
       channel : channel,
-      text    : `now playing ... \`${track.title}\` ${is_random ? '(random)' : ''}`,
+      text    : `now playing ... \`${track.title}\` requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`,
       username: 'DJ'
     })
   }
@@ -152,6 +151,9 @@ slackBot.on('slash_command', async (bot, message) => {
   const url     = message['text']
     , workspace = message['team_domain']
     , channel   = message['channel_name']
-    , user_name = message['user_name']
-  bot.replyPrivate(message, await add(url, workspace, channel, user_name))
+
+  bot.api.users.info({user: message.user}, async (error, response) => {
+    const {real_name} = response.user;
+    bot.replyPrivate(message, await add(url, workspace, channel, real_name))
+  })
 })

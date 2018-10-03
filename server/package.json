@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "start": "forever start app.js",
+    "restart": "forever restart app.js",
     "dev": "npx nodemon app.js"
   },
   "dependencies": {
