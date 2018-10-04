@@ -56,14 +56,16 @@ class YouTube {
     return new Promise((resolve, reject) => {
       api.addParam('type', 'video')
       api.addParam('videoEmbeddable', 'true')
-      api.search(keyword, 20, function (error, result) {
+      api.search(keyword, 5, function (error, result) {
         if (error) {
           reject(error)
         } else {
           try {
             if (result.items.length) {
-              resolve(
-                result.items
+              resolve({
+                nextPageToken: result.nextPageToken || null,
+                prevPageToken: result.prevPageToken || null,
+                items        : result.items
                   .filter(item => {
                     return !!item.id.videoId
                   })
@@ -74,7 +76,8 @@ class YouTube {
                       description: item.snippet.description,
                       thumbnail  : item.snippet.thumbnails.default
                     }
-                  }))
+                  })
+              })
             } else {
               resolve([])
             }

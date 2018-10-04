@@ -40,6 +40,7 @@ async function play(workspace, channel) {
   }
   server.broadcast(JSON.stringify(que))
   if (this.bot) {
+
     this.bot.say({
       channel : channel,
       text    : `now playing ... \`${track.title}\` as requested by ${track.requestedBy} ${is_random ? '(random)' : ''}`,
@@ -108,12 +109,12 @@ async function add(url, workspace, channel, user_name) {
 
 async function search_youtube(keyword) {
 
-  const videos = await YouTube.search(keyword)
-  let message  = {
+  const searchResponse = await YouTube.search(keyword)
+  let message          = {
     "text"       : `Search Results`,
     "attachments": []
   }
-  videos.map(video => {
+  searchResponse.items.map(video => {
     message.attachments.push({
       "fallback"       : "fallback string",
       "title"          : video.title,
@@ -134,6 +135,35 @@ async function search_youtube(keyword) {
       ]
     })
   })
+  if (searchResponse.nextPageToken || searchResponse.prevPageToken) {
+    const navi = {
+      "fallback"       : "fallback string",
+      "title"          : "Next",
+      "callback_id"    : "search_youtube_navigate",
+      "color"          : "#478b6e",
+      "attachment_type": "default",
+      "actions"        : []
+    }
+    if (searchResponse.prevPageToken) {
+      navi.actions.push({
+        "name" : "prevYouTubeButton",
+        "text" : "Prev",
+        "type" : "button",
+        "style": "primary",
+        "value": searchResponse.prevPageToken
+      })
+    }
+    if (searchResponse.nextPageToken) {
+      navi.actions.push({
+        "name" : "nextYouTubeButton",
+        "text" : "Next",
+        "type" : "button",
+        "style": "primary",
+        "value": searchResponse.nextPageToken
+      })
+    }
+    message.attachments.push(navi)
+  }
 
   return message
 }
