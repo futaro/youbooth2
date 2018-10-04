@@ -148,7 +148,7 @@ async function search_youtube(keyword) {
         "name" : "prevYouTubeButton",
         "text" : "Prev",
         "type" : "button",
-        "value": searchResponse.prevPageToken
+        "value": {keyword: keyword, token: searchResponse.prevPageToken}
       })
     }
     if (searchResponse.nextPageToken) {
@@ -156,7 +156,7 @@ async function search_youtube(keyword) {
         "name" : "nextYouTubeButton",
         "text" : "Next",
         "type" : "button",
-        "value": searchResponse.nextPageToken
+        "value": {keyword: keyword, token: searchResponse.nextPageToken}
       })
     }
     message.attachments.push(nav)
@@ -243,7 +243,7 @@ slackBot.on('interactive_message_callback', async (bot, message) => {
   } else if (message.callback_id === 'search_youtube_navigate') {
 
     console.log(message)
-
+    bot.replyPrivate(message, await search_youtube(message.text))
   }
 })
 
