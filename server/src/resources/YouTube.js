@@ -56,7 +56,7 @@ class YouTube {
     return new Promise((resolve, reject) => {
       api.addParam('type', 'video')
       api.addParam('videoEmbeddable', 'true')
-      api.search(keyword, 5, function (error, result) {
+      api.search(keyword, 3, function (error, result) {
         if (error) {
           reject(error)
         } else {

@@ -136,33 +136,30 @@ async function search_youtube(keyword) {
     })
   })
   if (searchResponse.nextPageToken || searchResponse.prevPageToken) {
-    const navi = {
+    const nav = {
       "fallback"       : "fallback string",
-      "title"          : "Next",
       "callback_id"    : "search_youtube_navigate",
       "color"          : "#478b6e",
       "attachment_type": "default",
       "actions"        : []
     }
     if (searchResponse.prevPageToken) {
-      navi.actions.push({
+      nav.actions.push({
         "name" : "prevYouTubeButton",
         "text" : "Prev",
         "type" : "button",
-        "style": "primary",
         "value": searchResponse.prevPageToken
       })
     }
     if (searchResponse.nextPageToken) {
-      navi.actions.push({
+      nav.actions.push({
         "name" : "nextYouTubeButton",
         "text" : "Next",
         "type" : "button",
-        "style": "primary",
         "value": searchResponse.nextPageToken
       })
     }
-    message.attachments.push(navi)
+    message.attachments.push(nav)
   }
 
   return message
@@ -234,6 +231,8 @@ slackBot.on('slash_command', async (bot, message) => {
 })
 
 slackBot.on('interactive_message_callback', async (bot, message) => {
+
+  console.log(message)
 
   const url       = 'https://www.youtube.com/watch?v=' + message.actions[0].value
   const workspace = message.team.domain
