@@ -232,14 +232,19 @@ slackBot.on('slash_command', async (bot, message) => {
 
 slackBot.on('interactive_message_callback', async (bot, message) => {
 
-  console.log(message)
+  if (message.callback_id === 'add_track_from_interaction') {
+    const url       = 'https://www.youtube.com/watch?v=' + message.actions[0].value
+    const workspace = message.team.domain
+    const channel   = message.raw_message.channel.name
+    const user      = await getUserNameFromMessage(message).catch(e => console.dir(e))
 
-  const url       = 'https://www.youtube.com/watch?v=' + message.actions[0].value
-  const workspace = message.team.domain
-  const channel   = message.raw_message.channel.name
-  const user      = await getUserNameFromMessage(message).catch(e => console.dir(e))
+    bot.replyInteractive(message, await add(url, workspace, channel, user))
 
-  bot.replyInteractive(message, await add(url, workspace, channel, user))
+  } else if (message.callback_id === 'search_youtube_navigate') {
+
+    console.log(message)
+
+  }
 })
 
 function getUserNameFromMessage(message) {
