@@ -205,18 +205,23 @@ slackBot.on('slash_command', async (bot, message) => {
 
 slackBot.on('interactive_message_callback', async (bot, message) => {
 
-  const url = 'https://www.youtube.com/watch?v=' + message.actions[0].value
+  const url       = 'https://www.youtube.com/watch?v=' + message.actions[0].value
   const workspace = message.team.domain
-  const channel = message.raw_message.channel.name
-  const user = await getUserNameFromMessage(message)
+  const channel   = message.raw_message.channel.name
+  const user      = await getUserNameFromMessage(message).catch(e => console.dir(e))
+
   bot.replyPrivate(message, await add(url, workspace, channel, user))
 })
 
 function getUserNameFromMessage(message) {
   return new Promise((resolve, reject) => {
     this.bot.api.users.info({user: message.user}, async (error, response) => {
-      if (error) return reject(error)
-      resolve(response.user.real_name)
+      try {
+        if (error) return reject(error)
+        resolve(response.user.real_name)
+      } catch (e) {
+        reject(e)
+      }
     })
   })
 }

@@ -37,14 +37,17 @@ class YouTube {
       const url = `https://www.googleapis.com/youtube/v3/videos?id=${uid}&key=${config.youtube.api_key}&part=snippet,contentDetails,status`
       wget({url: url, dest: '/dev/null'}, function (error, response, body) {
         if (error) return reject(error)
+        try {
+          body = JSON.parse(body)
 
-        body = JSON.parse(body)
-
-        resolve({
-          title      : body.items[0].snippet.title,
-          description: body.items[0].snippet.description,
-          duration   : moment.duration(body.items[0].contentDetails.duration).asSeconds()
-        })
+          resolve({
+            title      : body.items[0].snippet.title,
+            description: body.items[0].snippet.description,
+            duration   : moment.duration(body.items[0].contentDetails.duration).asSeconds()
+          })
+        } catch (e) {
+          reject(e)
+        }
       })
     })
   }
@@ -57,22 +60,26 @@ class YouTube {
         if (error) {
           reject(error)
         } else {
-          if (result.items.length) {
-            resolve(
-              result.items
-                .filter(item => {
-                  return !!item.id.videoId
-                })
-                .map(item => {
-                  return {
-                    id         : item.id.videoId,
-                    title      : item.snippet.title,
-                    description: item.snippet.description,
-                    thumbnail  : item.snippet.thumbnails.default
-                  }
-                }))
-          } else {
-            resolve([])
+          try {
+            if (result.items.length) {
+              resolve(
+                result.items
+                  .filter(item => {
+                    return !!item.id.videoId
+                  })
+                  .map(item => {
+                    return {
+                      id         : item.id.videoId,
+                      title      : item.snippet.title,
+                      description: item.snippet.description,
+                      thumbnail  : item.snippet.thumbnails.default
+                    }
+                  }))
+            } else {
+              resolve([])
+            }
+          } catch (e) {
+            reject(e)
           }
         }
       })
