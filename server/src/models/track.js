@@ -60,7 +60,18 @@ let Track = connection => {
       allowNull   : false
     },
   }, {
-    indexes: [
+    getterMethods: {
+      url() {
+        if (this.type === 'youtube') {
+          return 'https://www.youtube.com/watch?v=' + this.uid
+        } else if (this.type === 'niconico') {
+          return 'http://www.nicovideo.jp/watch/' + this.uid
+        } else {
+          return ''
+        }
+      }
+    },
+    indexes      : [
       {
         name  : 'is_played_index',
         fields: ['isPlayed']

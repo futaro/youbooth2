@@ -6,10 +6,11 @@ const connection = new Sequelize(
   db.user,
   db.pass,
   {
-    dialect: 'mysql',
-    host   : db.host,
-    port   : db.port,
-    logging: false
+    dialect         : 'mysql',
+    host            : db.host,
+    port            : db.port,
+    logging         : false,
+    operatorsAliases: false
   }
 )
 

@@ -52,11 +52,14 @@ class YouTube {
     })
   }
 
-  static search(keyword) {
+  static search(keyword, token = null) {
     return new Promise((resolve, reject) => {
       api.addParam('type', 'video')
       api.addParam('videoEmbeddable', 'true')
-      api.search(keyword, 3, function (error, result) {
+
+      let obj = {}
+      if (token) obj.pageToken = token
+      api.search(keyword, 3, obj, function (error, result) {
         if (error) {
           reject(error)
         } else {

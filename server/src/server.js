@@ -1,19 +1,73 @@
 const WebSocketServer = require('websocket').server
   , http              = require('http')
+  , Store             = require('./store')
   , logger            = require('./logger')
+  , {Track}           = require('./models')
   , configs           = require('../../config.server')
 
 class Server {
 
-  constructor() {
+  constructor(dj) {
+
+    this._createServer()
+    this._createWebSocketServer()
 
     this.handlers = {}
+    this.addHandler('hello', async req => {
 
+      logger.debug(`hello()`)
+
+      const team_id    = req.data.workspace || false,
+            channel_id = req.data.channel || false
+
+      const store = Store.factory(team_id, channel_id)
+
+      if (!store.nowPlayingID) {
+        await this.dj.playTrack(team_id, channel_id)
+        return
+      }
+
+      const track = await Track.findById(store.nowPlayingID)
+
+      if (!track) return
+
+      return {
+        action: 'play',
+        data  : {
+          workspace: team_id,
+          channel  : channel_id,
+          track    : track,
+          from     : parseInt(((new Date()).getTime() - store.startTime) / 1000),
+          is_random: store.isRandom
+        }
+      }
+    })
+
+    this.dj = dj
+    this.dj.on('play', (track, is_random) => {
+      console.log(track)
+      this.broadcast({
+        action: 'play',
+        data  : {
+          workspace: track.workspace,
+          channel  : track.channel,
+          track    : track,
+          from     : 0,
+          is_random: is_random
+        }
+      })
+    })
+  }
+
+  _createServer() {
     this._server = http.createServer((req, res) => {
       logger.debug(`Received request for ${req.url}`)
       res.writeHead(404)
       res.end()
     })
+  }
+
+  _createWebSocketServer() {
     this._wsServer = new WebSocketServer({
       httpServer           : this._server,
       autoAcceptConnections: false
@@ -29,7 +83,6 @@ class Server {
       return
     }
     this._connection = req.accept('echo-protocol', req.origin)
-    // logger.debug(`Connection accepted.`)
     this._connection.on('message', this.onMessage.bind(this))
     this._connection.on('close', this.onClose.bind(this))
   }
@@ -65,7 +118,8 @@ class Server {
   }
 
   broadcast(message) {
-    this._wsServer.broadcast(message)
+    logger.debug(`broadcast(${JSON.stringify(message)})`)
+    this._wsServer.broadcast(JSON.stringify(message))
   }
 
   listen() {
