@@ -210,7 +210,7 @@ slackBot.on('interactive_message_callback', async (bot, message) => {
   const channel   = message.raw_message.channel.name
   const user      = await getUserNameFromMessage(message).catch(e => console.dir(e))
 
-  bot.replyPrivate(message, await add(url, workspace, channel, user))
+  bot.replyInteractive(message, await add(url, workspace, channel, user))
 })
 
 function getUserNameFromMessage(message) {
