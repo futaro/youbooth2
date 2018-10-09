@@ -39,7 +39,6 @@
 
     watch: {
       youtube_uid(new_val, old_val) {
-        console.log('new_val', new_val, 'old_val', old_val)
       }
     },
 
@@ -60,7 +59,7 @@
         }
 
         this.ws.onerror = error => {
-          console.log('WebSocket Error ' + error)
+          // console.log('WebSocket Error ' + error)
         }
 
         this.ws.onmessage = e => {
@@ -72,15 +71,13 @@
         }
 
         this.ws.onclose = e => {
-          console.log('Close')
+          // console.log('Close')
           this.ws = null
         }
       },
 
       play(data) {
-        console.log('play()', this.workspace, data.workspace, this.channel, data.channel)
         if (this.workspace !== data.workspace || this.channel !== data.channel) {
-          console.log('other workspace or channel. skip.')
           return
         }
         this.youtube_uid = null

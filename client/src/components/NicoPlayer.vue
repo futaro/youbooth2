@@ -29,7 +29,6 @@
       onMessage(e) {
         if (e.origin === 'http://embed.nicovideo.jp') {
           if (e.data.eventName === 'playerStatusChange') {
-            console.log(e.data.data.playerStatus)
             if (e.data.data.playerStatus === 4) {
               this.$emit('input', null)
             }

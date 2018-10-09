@@ -29,7 +29,6 @@
 
     methods: {
       initialize() {
-        console.log('initialize!', this.player)
         if (this.player) {
           this.player.destroy()
         }
@@ -48,7 +47,6 @@
       },
       onStateChange(e) {
         if (e.data === 0) {
-          console.log('end', this.$emit)
           this.$emit('input', null)
         }
       }

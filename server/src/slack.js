@@ -4,24 +4,32 @@ const botkit = require('botkit')
 
 class Slack {
 
+  static get botConfig() {
+    return {
+      debug          : true,
+      logger         : logger,
+      json_file_store: configs.bot.json_file_store_path
+    }
+  }
+
+  static get slackConfig() {
+    return {
+      clientId    : configs.slack.clientId,
+      clientSecret: configs.slack.clientSecret,
+      scopes      : ['commands', 'bot']
+    }
+  }
+
   constructor(dj) {
 
-    this.dj = dj
-
-    this.controller = botkit.slackbot({
-        debug          : true,
-        logger         : logger,
-        json_file_store: configs.bot.json_file_store_path
-      })
-      .configureSlackApp({
-        clientId    : configs.slack.clientId,
-        clientSecret: configs.slack.clientSecret,
-        scopes      : ['commands', 'bot']
-      })
+    this.controller = botkit
+      .slackbot(Slack.botConfig)
+      .configureSlackApp(Slack.slackConfig)
       .setupWebserver(configs.bot.port, (err, webserver) => this.onSetUpWebServer(err, webserver))
       .on('slash_command', (bot, message) => this.onSlashCommand(bot, message))
       .on('interactive_message_callback', (bot, message) => this.onInteractiveMessageCallback(bot, message))
 
+    this.dj = dj
     this.dj.on('play', (track, is_random) => this.onPlayTrack(track, is_random))
   }
 
@@ -31,16 +39,6 @@ class Slack {
         if (err) return reject(err)
         const team = teams.find(team => team.id === team_id)
         resolve(team)
-      })
-    })
-  }
-
-  getChannel(channel_id) {
-    return new Promise((resolve, reject) => {
-      this.controller.storage.channels.all(function (err, channels) {
-        if (err) return reject(err)
-        const channel = channels.find(channel => channel.id === channel_id)
-        resolve(channel)
       })
     })
   }
@@ -99,7 +97,7 @@ class Slack {
         break
 
       case `/${prefix}url`:
-        bot.replyPrivate(message, `http://y.futa.ro/${message.team_id}/${message.channel_id}`)
+        bot.replyPrivate(message, `${configs.origin}/#/${message.team_id}/${message.channel_id}`)
         break;
     }
   }

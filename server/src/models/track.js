@@ -63,9 +63,9 @@ let Track = connection => {
     getterMethods: {
       url() {
         if (this.type === 'youtube') {
-          return 'https://www.youtube.com/watch?v=' + this.uid
+          return `https://www.youtube.com/watch?v=${this.uid}`
         } else if (this.type === 'niconico') {
-          return 'http://www.nicovideo.jp/watch/' + this.uid
+          return `http://www.nicovideo.jp/watch/${this.uid}`
         } else {
           return ''
         }
