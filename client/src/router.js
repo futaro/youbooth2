@@ -1,5 +1,6 @@
 import Vue         from 'vue'
 import Router      from 'vue-router'
+import Home        from './views/Home'
 import VideoScreen from './views/VideoScreen'
 
 Vue.use(Router)
@@ -9,7 +10,7 @@ export default new Router({
     {
       path     : '/',
       name     : 'home',
-      component: VideoScreen
+      component: Home
     },
     {
       path     : '/:workspace/:channel',

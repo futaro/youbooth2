@@ -6,9 +6,10 @@
 
 <style>
   body {
-    background-color: #333;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+    background-color : #333;
+    color            : #EEE;
+    padding          : 0;
+    margin           : 0;
+    overflow         : hidden;
   }
 </style>
