@@ -47,20 +47,22 @@ class Slack {
 
     const team = await this.getTeam(track.workspace)
 
-    this.controller.spawn({token: team.bot.token}).say({
-      text       : 'now playing' + (is_random ? '(random play)' : ''),
-      channel    : track.channel,
-      username   : 'DJ',
-      attachments: [{
-        title          : track.title,
-        title_link     : track.url,
-        attachment_type: 'default',
-        color          : '#387259'
-      }]
-    }, function (err, response) {
-      if (err) logger.error(err)
-      else logger.debug(response)
-    })
+    if (!is_random) {
+      this.controller.spawn({token: team.bot.token}).say({
+        text       : 'now playing',
+        channel    : track.channel,
+        username   : 'DJ',
+        attachments: [{
+          title          : track.title,
+          title_link     : track.url,
+          attachment_type: 'default',
+          color          : '#387259'
+        }]
+      }, function (err, response) {
+        if (err) logger.error(err)
+        else logger.debug(response)
+      })
+    }
 
   }
 
